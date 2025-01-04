@@ -1,0 +1,59 @@
+# version: '3'
+# services:
+#   db:
+#     image: mysql:5.7
+#     environment:
+#       MY_ROOT_PASSWORD: password
+#       MYSQL_DATABASE: root
+#     ports:
+#       - "3306:3306"
+
+#   web:
+#     build: .
+#     command: bundle exec rails s -p 3000 -b '0.0.0.0'
+
+#     volumes:
+#       - .:/app_name
+#     ports:
+#       - "3000:3000"
+#     links:
+#       - db
+
+services:
+  db:
+    image: mariadb:10.8
+    container_name: mariadb_container    
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - db-data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    container_name: phpmyadmin_container
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      # PMA_USER: test-user
+      # PMA_PASWORD: test-pass
+    ports:
+      - "80:80"
+    volumes:
+      - phpmyadmin-data:/sessions
+    
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    container_name: rails_container    
+    depends_on:
+      - db
+    environment:
+      DATABASE_PASSWORD: "${DB_PASSWORD}"
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/samplerails
+volumes:
+  db-data:
+  phpmyadmin-data:
