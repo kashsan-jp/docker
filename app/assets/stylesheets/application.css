@@ -72,6 +72,7 @@ body {
   .link-button {
     display: inline-block;
     background-color: #007bff;
+    font-size: 17px;
     color: #fff;
     padding: 10px 20px;
     text-decoration: none;
